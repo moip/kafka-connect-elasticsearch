@@ -15,9 +15,6 @@
  **/
 package io.confluent.connect.elasticsearch;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +31,6 @@ import io.searchbox.core.BulkResult;
 public class BulkIndexingClient implements BulkClient<IndexableRecord, Bulk> {
 
   private static final Logger LOG = LoggerFactory.getLogger(BulkIndexingClient.class);
-
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   private final JestClient client;
 
@@ -67,11 +62,9 @@ public class BulkIndexingClient implements BulkClient<IndexableRecord, Bulk> {
 
     for (BulkResult.BulkResultItem item : result.getItems()) {
       if (item.error != null) {
-        final ObjectNode parsedError = (ObjectNode) OBJECT_MAPPER.readTree(item.error);
-        final String errorType = parsedError.get("type").asText("");
-        if ("version_conflict_engine_exception".equals(errorType)) {
+        if (item.error.contains("VersionConflictEngineException")) {
           versionConflicts.add(new Key(item.index, item.type, item.id));
-        } else if ("mapper_parse_exception".equals(errorType)) {
+        } else if (item.error.contains("MapperParsingException")) {
           retriable = false;
           errors.add(item.error);
         } else {

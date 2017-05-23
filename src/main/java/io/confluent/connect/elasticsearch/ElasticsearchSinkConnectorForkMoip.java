@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ElasticsearchSinkConnector extends SinkConnector {
+public class ElasticsearchSinkConnectorForkMoip extends SinkConnector {
 
   private Map<String, String> configProperties;
 
@@ -42,7 +42,7 @@ public class ElasticsearchSinkConnector extends SinkConnector {
       configProperties = props;
       ElasticsearchSinkConnectorConfig config = new ElasticsearchSinkConnectorConfig(props);
     } catch (ConfigException e) {
-      throw new ConnectException("Couldn't start ElasticsearchSinkConnector due to configuration error", e);
+      throw new ConnectException("Couldn't start ElasticsearchSinkConnectorForkMoip due to configuration error", e);
     }
   }
 
