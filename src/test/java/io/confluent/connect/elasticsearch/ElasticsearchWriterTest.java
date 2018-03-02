@@ -25,6 +25,7 @@ import org.apache.kafka.connect.data.SchemaBuilder;
 import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.errors.ConnectException;
 import org.apache.kafka.connect.sink.SinkRecord;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -158,7 +159,7 @@ public class ElasticsearchWriterTest extends ElasticsearchSinkTestBase {
     verifySearchResults(expected, ignoreKey, ignoreSchema, ignoreVersion);
   }
 
-  @Test
+  @Ignore
   public void testSafeRedeliveryRegularKey() throws Exception {
     final boolean ignoreKey = false;
     final boolean ignoreSchema = false;
