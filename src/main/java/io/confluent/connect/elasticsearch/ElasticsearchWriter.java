@@ -43,6 +43,7 @@ public class ElasticsearchWriter {
   private final JestClient client;
   private final String type;
   private final boolean ignoreKey;
+  private final boolean ignoreVersion;
   private final Set<String> ignoreKeyTopics;
   private final boolean ignoreSchema;
   private final Set<String> ignoreSchemaTopics;
@@ -56,6 +57,7 @@ public class ElasticsearchWriter {
       JestClient client,
       String type,
       boolean ignoreKey,
+      boolean ignoreVersion,
       Set<String> ignoreKeyTopics,
       boolean ignoreSchema,
       Set<String> ignoreSchemaTopics,
@@ -71,6 +73,7 @@ public class ElasticsearchWriter {
     this.client = client;
     this.type = type;
     this.ignoreKey = ignoreKey;
+    this.ignoreVersion = ignoreVersion;
     this.ignoreKeyTopics = ignoreKeyTopics;
     this.ignoreSchema = ignoreSchema;
     this.ignoreSchemaTopics = ignoreSchemaTopics;
@@ -95,6 +98,7 @@ public class ElasticsearchWriter {
     private final JestClient client;
     private String type;
     private boolean ignoreKey = false;
+    private boolean ignoreVersion = false;
     private Set<String> ignoreKeyTopics = Collections.emptySet();
     private boolean ignoreSchema = false;
     private Set<String> ignoreSchemaTopics = Collections.emptySet();
@@ -119,6 +123,11 @@ public class ElasticsearchWriter {
     public Builder setIgnoreKey(boolean ignoreKey, Set<String> ignoreKeyTopics) {
       this.ignoreKey = ignoreKey;
       this.ignoreKeyTopics = ignoreKeyTopics;
+      return this;
+    }
+
+    public Builder setIgnoreVersion(boolean ignoreVersion) {
+      this.ignoreVersion = ignoreVersion;
       return this;
     }
 
@@ -173,6 +182,7 @@ public class ElasticsearchWriter {
           client,
           type,
           ignoreKey,
+          ignoreVersion,
           ignoreKeyTopics,
           ignoreSchema,
           ignoreSchemaTopics,
@@ -207,7 +217,7 @@ public class ElasticsearchWriter {
         existingMappings.add(index);
       }
 
-      final IndexableRecord indexableRecord = DataConverter.convertRecord(sinkRecord, index, type, ignoreKey, ignoreSchema);
+      final IndexableRecord indexableRecord = DataConverter.convertRecord(sinkRecord, index, type, ignoreKey, ignoreSchema, ignoreVersion);
 
       bulkProcessor.add(indexableRecord, flushTimeoutMs);
     }
