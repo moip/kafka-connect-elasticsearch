@@ -57,10 +57,10 @@ public class ElasticsearchWriter {
       JestClient client,
       String type,
       boolean ignoreKey,
-      boolean ignoreVersion,
       Set<String> ignoreKeyTopics,
       boolean ignoreSchema,
       Set<String> ignoreSchemaTopics,
+      boolean ignoreVersion,
       Map<String, String> topicToIndexMap,
       long flushTimeoutMs,
       int maxBufferedRecords,
@@ -73,10 +73,10 @@ public class ElasticsearchWriter {
     this.client = client;
     this.type = type;
     this.ignoreKey = ignoreKey;
-    this.ignoreVersion = ignoreVersion;
     this.ignoreKeyTopics = ignoreKeyTopics;
     this.ignoreSchema = ignoreSchema;
     this.ignoreSchemaTopics = ignoreSchemaTopics;
+    this.ignoreVersion = ignoreVersion;
     this.topicToIndexMap = topicToIndexMap;
     this.flushTimeoutMs = flushTimeoutMs;
 
@@ -98,10 +98,10 @@ public class ElasticsearchWriter {
     private final JestClient client;
     private String type;
     private boolean ignoreKey = false;
-    private boolean ignoreVersion = false;
     private Set<String> ignoreKeyTopics = Collections.emptySet();
     private boolean ignoreSchema = false;
     private Set<String> ignoreSchemaTopics = Collections.emptySet();
+    private boolean ignoreVersion = false;
     private Map<String, String> topicToIndexMap = new HashMap<>();
     private long flushTimeoutMs;
     private int maxBufferedRecords;
@@ -126,14 +126,14 @@ public class ElasticsearchWriter {
       return this;
     }
 
-    public Builder setIgnoreVersion(boolean ignoreVersion) {
-      this.ignoreVersion = ignoreVersion;
-      return this;
-    }
-
     public Builder setIgnoreSchema(boolean ignoreSchema, Set<String> ignoreSchemaTopics) {
       this.ignoreSchema = ignoreSchema;
       this.ignoreSchemaTopics = ignoreSchemaTopics;
+      return this;
+    }
+
+    public Builder setIgnoreVersion(boolean ignoreVersion) {
+      this.ignoreVersion = ignoreVersion;
       return this;
     }
 
@@ -182,10 +182,10 @@ public class ElasticsearchWriter {
           client,
           type,
           ignoreKey,
-          ignoreVersion,
           ignoreKeyTopics,
           ignoreSchema,
           ignoreSchemaTopics,
+          ignoreVersion,
           topicToIndexMap,
           flushTimeoutMs,
           maxBufferedRecords,

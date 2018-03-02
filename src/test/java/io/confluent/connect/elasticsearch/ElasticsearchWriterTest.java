@@ -57,7 +57,7 @@ public class ElasticsearchWriterTest extends ElasticsearchSinkTestBase {
     final boolean ignoreVersion = false;
 
     Collection<SinkRecord> records = prepareData(2);
-    ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema);
+    ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema, ignoreVersion);
     writeDataAndRefresh(writer, records);
 
     Collection<SinkRecord> expected = Collections.singletonList(new SinkRecord(TOPIC, PARTITION, Schema.STRING_SCHEMA, key, schema, record, 1));
@@ -71,7 +71,7 @@ public class ElasticsearchWriterTest extends ElasticsearchSinkTestBase {
     final boolean ignoreVersion = false;
 
     Collection<SinkRecord> records = prepareData(2);
-    ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema);
+    ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema, ignoreVersion);
     writeDataAndRefresh(writer, records);
     verifySearchResults(records, ignoreKey, ignoreSchema, ignoreVersion);
   }
@@ -83,7 +83,7 @@ public class ElasticsearchWriterTest extends ElasticsearchSinkTestBase {
     final boolean ignoreVersion = false;
 
     Collection<SinkRecord> records = prepareData(2);
-    ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema);
+    ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema, ignoreVersion);
     writeDataAndRefresh(writer, records);
     verifySearchResults(records, ignoreKey, ignoreSchema, ignoreVersion);
   }
@@ -97,7 +97,7 @@ public class ElasticsearchWriterTest extends ElasticsearchSinkTestBase {
     final String indexOverride = "index";
 
     Collection<SinkRecord> records = prepareData(2);
-    ElasticsearchWriter writer = initWriter(client, ignoreKey, Collections.<String>emptySet(), ignoreSchema, Collections.<String>emptySet(), Collections.singletonMap(TOPIC, indexOverride));
+    ElasticsearchWriter writer = initWriter(client, ignoreKey, Collections.<String>emptySet(), ignoreSchema, Collections.<String>emptySet(), Collections.singletonMap(TOPIC, indexOverride), ignoreVersion);
     writeDataAndRefresh(writer, records);
     verifySearchResults(records, indexOverride, ignoreKey, ignoreSchema, ignoreVersion);
   }
@@ -108,7 +108,7 @@ public class ElasticsearchWriterTest extends ElasticsearchSinkTestBase {
     SinkRecord sinkRecord = new SinkRecord(TOPIC, PARTITION, Schema.STRING_SCHEMA, key, otherSchema, otherRecord, 0);
     records.add(sinkRecord);
 
-    ElasticsearchWriter writer = initWriter(client, true, false);
+    ElasticsearchWriter writer = initWriter(client, true, false, false);
 
     writer.write(records);
     Thread.sleep(5000);
@@ -141,7 +141,7 @@ public class ElasticsearchWriterTest extends ElasticsearchSinkTestBase {
     records.add(sinkRecord);
     expected.add(sinkRecord);
 
-    ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema);
+    ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema, ignoreVersion);
 
     writer.write(records);
     records.clear();
@@ -174,7 +174,7 @@ public class ElasticsearchWriterTest extends ElasticsearchSinkTestBase {
     value1.put("message", "bye");
     final SinkRecord sinkRecord1 = new SinkRecord(TOPIC, PARTITION, Schema.STRING_SCHEMA, key, schema, value1, 1);
 
-    final ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema);
+    final ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema, ignoreVersion);
     writer.write(Arrays.asList(sinkRecord0, sinkRecord1));
     writer.flush();
 
@@ -203,7 +203,7 @@ public class ElasticsearchWriterTest extends ElasticsearchSinkTestBase {
 
     final List<SinkRecord> records = Arrays.asList(sinkRecord0, sinkRecord1);
 
-    final ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema);
+    final ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema, ignoreVersion);
     writer.write(records);
     writer.flush();
 
@@ -235,7 +235,7 @@ public class ElasticsearchWriterTest extends ElasticsearchSinkTestBase {
     SinkRecord sinkRecord = new SinkRecord(TOPIC, PARTITION, Schema.STRING_SCHEMA, key, structSchema, struct, 0);
     records.add(sinkRecord);
 
-    ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema);
+    ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema, ignoreVersion);
     writeDataAndRefresh(writer, records);
     verifySearchResults(records, ignoreKey, ignoreSchema, ignoreVersion);
   }
@@ -254,7 +254,7 @@ public class ElasticsearchWriterTest extends ElasticsearchSinkTestBase {
 
     SinkRecord sinkRecord = new SinkRecord(TOPIC, PARTITION, Schema.STRING_SCHEMA, key, mapSchema, map, 0);
 
-    ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema);
+    ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema, ignoreVersion);
     writeDataAndRefresh(writer, Collections.singletonList(sinkRecord));
 
     Collection<?> expectedRecords = Collections.singletonList(new ObjectMapper().writeValueAsString(map));
@@ -282,7 +282,7 @@ public class ElasticsearchWriterTest extends ElasticsearchSinkTestBase {
     SinkRecord sinkRecord = new SinkRecord(TOPIC, PARTITION, Schema.STRING_SCHEMA, key, structSchema, struct, 0);
     records.add(sinkRecord);
 
-    ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema);
+    ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema, ignoreVersion);
     writeDataAndRefresh(writer, records);
     verifySearchResults(records, ignoreKey, ignoreSchema, ignoreVersion);
   }
@@ -304,7 +304,7 @@ public class ElasticsearchWriterTest extends ElasticsearchSinkTestBase {
     SinkRecord sinkRecord = new SinkRecord(TOPIC, PARTITION, Schema.STRING_SCHEMA, key, structSchema, struct, 0);
     records.add(sinkRecord);
 
-    ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema);
+    ElasticsearchWriter writer = initWriter(client, ignoreKey, ignoreSchema, ignoreVersion);
     writeDataAndRefresh(writer, records);
     verifySearchResults(records, ignoreKey, ignoreSchema, ignoreVersion);
   }
@@ -318,15 +318,16 @@ public class ElasticsearchWriterTest extends ElasticsearchSinkTestBase {
     return records;
   }
 
-  private ElasticsearchWriter initWriter(JestClient client, boolean ignoreKey, boolean ignoreSchema) {
-    return initWriter(client, ignoreKey, Collections.<String>emptySet(), ignoreSchema, Collections.<String>emptySet(), Collections.<String, String>emptyMap());
+  private ElasticsearchWriter initWriter(JestClient client, boolean ignoreKey, boolean ignoreSchema, boolean ignoreVersion) {
+    return initWriter(client, ignoreKey, Collections.<String>emptySet(), ignoreSchema, Collections.<String>emptySet(), Collections.<String, String>emptyMap(), ignoreVersion);
   }
 
-  private ElasticsearchWriter initWriter(JestClient client, boolean ignoreKey, Set<String> ignoreKeyTopics, boolean ignoreSchema, Set<String> ignoreSchemaTopics, Map<String, String> topicToIndexMap) {
+  private ElasticsearchWriter initWriter(JestClient client, boolean ignoreKey, Set<String> ignoreKeyTopics, boolean ignoreSchema, Set<String> ignoreSchemaTopics, Map<String, String> topicToIndexMap, boolean ignoreVersion) {
     ElasticsearchWriter writer = new ElasticsearchWriter.Builder(client)
         .setType(TYPE)
         .setIgnoreKey(ignoreKey, ignoreKeyTopics)
         .setIgnoreSchema(ignoreSchema, ignoreSchemaTopics)
+        .setIgnoreVersion(ignoreVersion)
         .setTopicToIndexMap(topicToIndexMap)
         .setFlushTimoutMs(10000)
         .setMaxBufferedRecords(10000)
