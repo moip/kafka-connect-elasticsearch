@@ -97,7 +97,9 @@ public class ElasticsearchSinkConnectorConfig extends AbstractConfig {
                   + "Note that this is a global config that applies to all topics, use ``" + TOPIC_KEY_IGNORE_CONFIG + "`` to override as ``true`` for specific topics.",
                   group, ++order, Width.SHORT, "Ignore Key mode")
           .define(VERSION_IGNORE_CONFIG, Type.BOOLEAN, false, Importance.MEDIUM,
-                  "Whether to ignore kafka offset as document version.",
+                  "Whether to ignore kafka offset as document version on Elasticsearch document _version."
+                  + "When this is set to ``true``, document _version will not be sent and Elasticsearch auto versioning will be used.\n"
+                  + "Note that this is a global config that applies to all topics.",
                   group, ++order, Width.SHORT, "Ignore Version mode")
           .define(SCHEMA_IGNORE_CONFIG, Type.BOOLEAN, false, Importance.LOW,
                   "Whether to ignore schemas during indexing. "
