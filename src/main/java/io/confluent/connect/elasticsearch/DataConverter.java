@@ -78,7 +78,7 @@ public class DataConverter {
     }
   }
 
-  public static IndexableRecord convertRecord(SinkRecord record, String index, String type, boolean ignoreKey, boolean ignoreSchema) {
+  public static IndexableRecord convertRecord(SinkRecord record, String index, String type, boolean ignoreKey, boolean ignoreSchema, boolean ignoreVersion) {
     final String id;
     if (ignoreKey) {
       id = record.topic() + "+" + String.valueOf((int) record.kafkaPartition()) + "+" + String.valueOf(record.kafkaOffset());
@@ -97,7 +97,7 @@ public class DataConverter {
     }
 
     final String payload = new String(JSON_CONVERTER.fromConnectData(record.topic(), schema, value), StandardCharsets.UTF_8);
-    final Long version = ignoreKey ? null : record.kafkaOffset();
+    final Long version = ignoreKey || ignoreVersion ? null : record.kafkaOffset();
     return new IndexableRecord(new Key(index, type, id), payload, version);
   }
 

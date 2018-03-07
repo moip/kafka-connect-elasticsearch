@@ -43,6 +43,7 @@ public class ElasticsearchWriter {
   private final JestClient client;
   private final String type;
   private final boolean ignoreKey;
+  private final boolean ignoreVersion;
   private final Set<String> ignoreKeyTopics;
   private final boolean ignoreSchema;
   private final Set<String> ignoreSchemaTopics;
@@ -59,6 +60,7 @@ public class ElasticsearchWriter {
       Set<String> ignoreKeyTopics,
       boolean ignoreSchema,
       Set<String> ignoreSchemaTopics,
+      boolean ignoreVersion,
       Map<String, String> topicToIndexMap,
       long flushTimeoutMs,
       int maxBufferedRecords,
@@ -74,6 +76,7 @@ public class ElasticsearchWriter {
     this.ignoreKeyTopics = ignoreKeyTopics;
     this.ignoreSchema = ignoreSchema;
     this.ignoreSchemaTopics = ignoreSchemaTopics;
+    this.ignoreVersion = ignoreVersion;
     this.topicToIndexMap = topicToIndexMap;
     this.flushTimeoutMs = flushTimeoutMs;
 
@@ -98,6 +101,7 @@ public class ElasticsearchWriter {
     private Set<String> ignoreKeyTopics = Collections.emptySet();
     private boolean ignoreSchema = false;
     private Set<String> ignoreSchemaTopics = Collections.emptySet();
+    private boolean ignoreVersion = false;
     private Map<String, String> topicToIndexMap = new HashMap<>();
     private long flushTimeoutMs;
     private int maxBufferedRecords;
@@ -125,6 +129,11 @@ public class ElasticsearchWriter {
     public Builder setIgnoreSchema(boolean ignoreSchema, Set<String> ignoreSchemaTopics) {
       this.ignoreSchema = ignoreSchema;
       this.ignoreSchemaTopics = ignoreSchemaTopics;
+      return this;
+    }
+
+    public Builder setIgnoreVersion(boolean ignoreVersion) {
+      this.ignoreVersion = ignoreVersion;
       return this;
     }
 
@@ -176,6 +185,7 @@ public class ElasticsearchWriter {
           ignoreKeyTopics,
           ignoreSchema,
           ignoreSchemaTopics,
+          ignoreVersion,
           topicToIndexMap,
           flushTimeoutMs,
           maxBufferedRecords,
@@ -207,7 +217,7 @@ public class ElasticsearchWriter {
         existingMappings.add(index);
       }
 
-      final IndexableRecord indexableRecord = DataConverter.convertRecord(sinkRecord, index, type, ignoreKey, ignoreSchema);
+      final IndexableRecord indexableRecord = DataConverter.convertRecord(sinkRecord, index, type, ignoreKey, ignoreSchema, ignoreVersion);
 
       bulkProcessor.add(indexableRecord, flushTimeoutMs);
     }

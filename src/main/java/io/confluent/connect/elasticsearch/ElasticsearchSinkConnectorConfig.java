@@ -37,6 +37,7 @@ public class ElasticsearchSinkConnectorConfig extends AbstractConfig {
   public static final String TOPIC_INDEX_MAP_CONFIG = "topic.index.map";
   public static final String RETRY_BACKOFF_MS_CONFIG = "retry.backoff.ms";
   public static final String KEY_IGNORE_CONFIG = "key.ignore";
+  public static final String VERSION_IGNORE_CONFIG = "version.ignore";
   public static final String TOPIC_KEY_IGNORE_CONFIG = "topic.key.ignore";
   public static final String SCHEMA_IGNORE_CONFIG = "schema.ignore";
   public static final String TOPIC_SCHEMA_IGNORE_CONFIG = "topic.schema.ignore";
@@ -95,6 +96,11 @@ public class ElasticsearchSinkConnectorConfig extends AbstractConfig {
                   + "When this is set to ``true``, document IDs will be generated as the record's ``topic+partition+offset``.\n"
                   + "Note that this is a global config that applies to all topics, use ``" + TOPIC_KEY_IGNORE_CONFIG + "`` to override as ``true`` for specific topics.",
                   group, ++order, Width.SHORT, "Ignore Key mode")
+          .define(VERSION_IGNORE_CONFIG, Type.BOOLEAN, false, Importance.MEDIUM,
+                  "Whether to ignore kafka offset as document version on Elasticsearch document _version."
+                  + "When this is set to ``true``, document _version will not be sent and Elasticsearch auto versioning will be used.\n"
+                  + "Note that this is a global config that applies to all topics.",
+                  group, ++order, Width.SHORT, "Ignore Version mode")
           .define(SCHEMA_IGNORE_CONFIG, Type.BOOLEAN, false, Importance.LOW,
                   "Whether to ignore schemas during indexing. "
                   + "When this is set to ``true``, the record schema will be ignored for the purpose of registering an Elasticsearch mapping. "
